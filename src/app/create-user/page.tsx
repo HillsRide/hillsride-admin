@@ -2,16 +2,26 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import CodeLogo from '@/components/CodeLogo';
-import Link from 'next/link';
 import SearchableSelect from '@/components/SearchableSelect';
 import DepartmentSelect from '@/components/DepartmentSelect';
 
 export default function CreateUser() {
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    employeeId: '',
+    designation: '',
+    department: '',
+    manager: '',
+    approver: ''
+  });
   const [status, setStatus] = useState({
     message: '',
     type: ''  // 'success' or 'error'
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,7 +46,7 @@ export default function CreateUser() {
         });
         setTimeout(() => {
           router.push('/dashboard');
-        }, 2000);
+        }, 3000);
       } else {
         throw new Error(data.message || 'Failed to create user');
       }
@@ -49,20 +59,6 @@ export default function CreateUser() {
       setIsLoading(false);
     }
   };
-
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    employeeId: '',
-    designation: '',
-    department: '',
-    manager: '',
-    approver: '',
-    authCode: ''
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 py-8">
@@ -84,6 +80,7 @@ export default function CreateUser() {
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   placeholder="Enter full name"
                   className="input-field"
+                  required
                 />
               </div>
               <div>
@@ -94,6 +91,7 @@ export default function CreateUser() {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="Enter email address"
                   className="input-field"
+                  required
                 />
               </div>
               <div>
@@ -104,6 +102,7 @@ export default function CreateUser() {
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="Enter phone number"
                   className="input-field"
+                  required
                 />
               </div>
               <div>
@@ -112,7 +111,7 @@ export default function CreateUser() {
                   type="text"
                   value={formData.employeeId}
                   onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
-                  placeholder="Enter employee ID"
+                  placeholder="Leave blank for auto-generation"
                   className="input-field"
                 />
               </div>
@@ -159,17 +158,17 @@ export default function CreateUser() {
             </div>
           </div>
 
-          <div className="mt-8 space-y-4">
-            {status.message && (
-              <div className={`mt-4 p-3 rounded-lg text-center ${
-                status.type === 'success' 
-                  ? 'bg-green-500/10 text-green-500' 
-                  : 'bg-red-500/10 text-red-500'
-              }`}>
-                {status.message}
-              </div>
-            )}
+          {status.message && (
+            <div className={`mt-4 p-3 rounded-lg text-center ${
+              status.type === 'success' 
+                ? 'bg-green-500/10 text-green-500' 
+                : 'bg-red-500/10 text-red-500'
+            }`}>
+              {status.message}
+            </div>
+          )}
 
+          <div className="mt-8">
             <button 
               type="submit"
               disabled={isLoading}

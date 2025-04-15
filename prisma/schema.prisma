@@ -8,18 +8,23 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  fullName    String   @map("full_name")
-  email       String   @unique
-  phone       String
-  employeeId  String   @unique @map("employee_id")
-  designation String
-  department  String
-  manager     String
-  approver    String
-  authCode    String   @map("auth_code") // Add this field
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                 Int      @id @default(autoincrement())
+  fullName          String   @map("full_name")
+  email             String   @unique
+  phone             String
+  employeeId        String   @unique @map("employee_id")
+  designation       String   @map("designation") @db.VarChar(255)
+  department        String   @map("department") @db.VarChar(255)
+  manager           String   @map("manager") @db.VarChar(255)
+  approver          String   @map("approver") @db.VarChar(255)
+  password          String?  @default("Admin@123") // Made optional with default
+  pin               String?  // Optional
+  authCode          String?  @map("auth_code") @db.VarChar(100)
+  status            String   @default("ACTIVE") @map("status") @db.VarChar(50)
+  needsPasswordChange Boolean @default(true)
+  role              String   @default("user")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
   @@map("users")
 }

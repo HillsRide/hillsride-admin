@@ -16,8 +16,7 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSuccess }: {
     designation: '',
     department: '',
     manager: '',
-    approver: '',
-    authCode: ''
+    approver: ''
   });
   const [status, setStatus] = useState({ message: '', type: '' });
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +43,7 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSuccess }: {
         setTimeout(() => {
           onClose();
           onSuccess?.();
-        }, 2000);
+        }, 3000);
       } else {
         throw new Error(data.message || 'Failed to create employee');
       }
@@ -80,6 +79,7 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSuccess }: {
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   placeholder="Enter full name"
                   className="input-field"
+                  required
                 />
               </div>
               <div>
@@ -90,6 +90,7 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSuccess }: {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="Enter email address"
                   className="input-field"
+                  required
                 />
               </div>
               <div>
@@ -100,6 +101,7 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSuccess }: {
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="Enter phone number"
                   className="input-field"
+                  required
                 />
               </div>
               <div>
@@ -108,7 +110,7 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSuccess }: {
                   type="text"
                   value={formData.employeeId}
                   onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
-                  placeholder="Enter employee ID"
+                  placeholder="Leave blank for auto-generation"
                   className="input-field"
                 />
               </div>
