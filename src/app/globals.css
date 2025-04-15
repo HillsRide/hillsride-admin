@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.input-field {
+  @apply w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition;
+}
+
+/* Add to existing styles */
+.input-field:focus {
+  @apply ring-1 ring-orange-500;
+}
+
+.input-field.error {
+  @apply border-red-500;
+}
+
+/* Custom scrollbar for the searchable select */
+.overflow-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+  @apply bg-orange-500/50 rounded-full;
+}

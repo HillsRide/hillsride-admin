@@ -1,21 +1,16 @@
 export default function CodeLogo() {
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative">
-        <h1 className="text-5xl font-bold tracking-tight">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600">
-            Hills
-          </span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-            Ride
-          </span>
-        </h1>
-        <div className="absolute -top-3 -right-3 w-2 h-2 bg-blue-400 rounded-full animate-ping" />
-        <div className="absolute -bottom-3 -left-3 w-2 h-2 bg-purple-400 rounded-full animate-ping" />
+    <div className="relative group">
+      <div className="text-5xl font-bold relative z-10">
+        <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-white bg-clip-text text-transparent 
+          animate-gradient-x">Hills</span>
+        <span className="bg-gradient-to-r from-white via-orange-400 to-orange-500 bg-clip-text text-transparent 
+          animate-gradient-x">Ride</span>
       </div>
-      <div className="mt-2 text-sm font-light tracking-widest text-gray-400 uppercase">
-        Administrative Portal
-      </div>
+      <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 to-orange-400 rounded-lg blur opacity-30 
+        group-hover:opacity-60 transition duration-1000"></div>
+      <div className="absolute -inset-2 bg-gradient-to-r from-orange-400 to-white rounded-lg blur-xl opacity-20 
+        group-hover:opacity-40 animate-pulse"></div>
     </div>
   );
 }
