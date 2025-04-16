@@ -17,12 +17,13 @@ model User {
   department        String   @map("department") @db.VarChar(255)
   manager           String   @map("manager") @db.VarChar(255)
   approver          String   @map("approver") @db.VarChar(255)
-  password          String?  @default("Admin@123") // Made optional with default
-  pin               String?  // Optional
+  password          String?  @default("Admin@123")
+  pin               String?
   authCode          String?  @map("auth_code") @db.VarChar(100)
   status            String   @default("ACTIVE") @map("status") @db.VarChar(50)
   needsPasswordChange Boolean @default(true)
   role              String   @default("user")
+  searches          SearchHistory[] // Add this line
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
@@ -39,4 +40,153 @@ model SystemSetting {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("SystemSetting")
+}
+
+model SearchHistory {
+  id              String    @id @default(uuid())
+  search_query    String
+  latitude        Float?
+  longitude       Float?
+  search_count    Int       @default(1)
+  first_searched  DateTime  @default(now())
+  last_searched   DateTime  @default(now())
+  user_type      String    @default("guest")
+  device         String?
+  is_successful  Boolean   @default(true)
+  
+  // New business-focused fields
+  converted_to_booking Boolean @default(false)
+  booking_id          String?
+  user_id             Int?     // Link to User if logged in
+  session_id          String?  // Track unique sessions
+  source_page         String?  // Where the search was initiated
+  search_category     String?  // e.g., "OUTSTATION", "LOCAL", "RENTAL"
+  estimated_distance  Float?   // In kilometers
+  estimated_duration  Int?     // In minutes
+  peak_hour_search   Boolean  @default(false)
+  region             String?  // Geographic region
+  city               String?
+  state              String?
+  search_completion_rate Float? // How far user went in booking flow
+  
+  // Analytics fields
+  user_agent         String?  @db.Text
+  ip_address         String?
+  referral_source    String?
+  time_to_result     Int?     // Response time in ms
+  competitor_price_check Boolean @default(false)
+  
+  // Business intelligence
+  potential_revenue  Float?
+  seasonal_factor    Float?   // Seasonal demand multiplier
+  market_demand_score Int?    // 1-100 score
+  
+  user User? @relation(fields: [user_id], references: [id])
+
+  @@index([search_query])
+  @@index([search_count])
+  @@index([converted_to_booking])
+  @@index([search_category])
+  @@index([region, city, state])
+  @@index([first_searched, last_searched])
+}
+
+// New model for location analytics
+model LocationDemandAnalytics {
+  id                String   @id @default(uuid())
+  region            String
+  city              String
+  state             String
+  total_searches    Int      @default(0)
+  successful_bookings Int    @default(0)
+  revenue_generated Float    @default(0)
+  peak_hours        Json?    // Store peak hours data
+  popular_routes    Json?    // Store popular routes
+  average_fare      Float?
+  demand_score      Int?     // 1-100
+  updated_at        DateTime @updatedAt
+
+  @@unique([region, city, state])
+}
+
+// New model for pricing intelligence
+model PricingAnalytics {
+  id                String   @id @default(uuid())
+  route_hash        String   @unique // Hash of from-to locations
+  base_price        Float
+  surge_multiplier  Float    @default(1.0)
+  peak_hour_rate    Float?
+  off_peak_rate     Float?
+  competitor_price  Float?
+  success_rate      Float?   // Booking success rate at this price
+  last_updated      DateTime @updatedAt
+  
+  @@index([route_hash])
+}
+model Location {
+  id         String    @id @default(cuid())
+  name       String
+  district   String
+  state      String    @default("Assam")
+  isActive   Boolean   @default(true)
+  routesFrom Route[]   @relation("RouteOrigin")
+  routesTo   Route[]   @relation("RouteDestination")
+  stops      Stop[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Route {
+  id             String       @id @default(cuid())
+  originId       String
+  destinationId  String
+  origin         Location     @relation("RouteOrigin", fields: [originId], references: [id])
+  destination    Location     @relation("RouteDestination", fields: [destinationId], references: [id])
+  directionType  String       // "ONE_WAY", "TWO_WAY"
+  isActive       Boolean      @default(true)
+  stops          Stop[]
+  fares          RouteFare[]
+  availability   RouteAvailability[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Stop {
+  id         String   @id @default(cuid())
+  routeId    String
+  locationId String
+  name       String   // e.g., "Khanapara", even if it's within Guwahati
+  order      Int      // Order in the trip
+  distanceKm Float?
+  route      Route    @relation(fields: [routeId], references: [id])
+  location   Location @relation(fields: [locationId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model RouteFare {
+  id           String   @id @default(cuid())
+  routeId      String
+  vehicleType  String   // ENUM preferred
+  pricingType  String   // "FIXED", "PER_KM", "HYBRID"
+  baseFare     Float
+  perKmRate    Float?
+  perHourRate  Float?
+  nightCharge  Float?
+  hillCharge   Float?
+  waitingCharge Float?
+  route        Route    @relation(fields: [routeId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model RouteAvailability {
+  id           String   @id @default(cuid())
+  routeId      String
+  vehicleType  String
+  isAvailable  Boolean   @default(true)
+  reason       String?
+  route        Route     @relation(fields: [routeId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

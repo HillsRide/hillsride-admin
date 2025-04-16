@@ -94,7 +94,12 @@ export default function Home() {
           </button>
 
           <div className="text-center text-sm text-gray-400">
-
+            <Link 
+              href="/create-user" 
+              className="text-orange-400 hover:text-orange-300 font-medium"
+            >
+              Create an User
+            </Link>
           </div>
         </form>
       </div>
