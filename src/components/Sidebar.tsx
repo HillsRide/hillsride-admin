@@ -15,6 +15,14 @@ const menuItems = [
       { label: 'Customers', href: '/dashboard/users/customers' },
     ]
   },
+  {
+    icon: '📍',
+    label: 'Locations & Map',
+    subMenu: [
+      { label: 'Searched Locations', href: '/dashboard/locations/searched' },
+      { label: 'Settings', href: '/dashboard/locations/settings' },
+    ]
+  },
   { icon: '📝', label: 'Reports', href: '/dashboard/reports' },
   { icon: '⚙️', label: 'Settings', href: '/dashboard/settings' },
 ];

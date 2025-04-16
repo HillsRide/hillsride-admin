@@ -30,7 +30,11 @@ export default function Home() {
         throw new Error(data.message || 'Login failed');
       }
 
-      // Redirect to dashboard page
+      // Store token and user data
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Redirect to dashboard
       router.push('/dashboard');
       
     } catch (err: any) {

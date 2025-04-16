@@ -6,7 +6,7 @@ import RefreshButton from '@/components/RefreshButton';
 
 export default function EmployeesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const listRef = useRef<{ refreshList: () => Promise<void> }>();
+  const listRef = useRef<{ refreshList: () => Promise<void> }>(null);
 
   const handleRefresh = async () => {
     await listRef.current?.refreshList();

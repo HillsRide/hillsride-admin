@@ -1,22 +1,21 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextRequest } from 'next/server';
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(
+  request: NextRequest,
+  context: RouteContext
+): Promise<NextResponse> {
   try {
-    await prisma.user.delete({
-      where: {
-        id: parseInt(params.id)
-      }
-    });
-
-    return NextResponse.json({ success: true });
+    const params = await context.params;
+    const id = params.id;
+    return NextResponse.json({ id });
   } catch (error) {
-    console.error('Delete user error:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to delete user' },
+      { message: 'Error fetching user' },
       { status: 500 }
     );
   }

@@ -28,3 +28,15 @@ model User {
 
   @@map("users")
 }
+
+
+// Add this to your existing schema.prisma
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("SystemSetting")
+}
