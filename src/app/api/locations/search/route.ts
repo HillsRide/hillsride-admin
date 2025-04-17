@@ -1,79 +1,75 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query');
-    console.log('Search query:', query); // Debug log
-
+    
     if (!query) {
       return NextResponse.json({ suggestions: [] });
     }
 
-    // Log database search attempt
-    console.log('Checking database for:', query);
-    const existingSearches = await prisma.searchHistory.findMany({
-      where: {
-        search_query: {
-          contains: query,
-          mode: 'insensitive'
-        }
-      },
-      orderBy: {
-        search_count: 'desc'
-      },
-      take: 5,
-      select: {
-        search_query: true,
-        id: true
+    if (!process.env.GOOGLE_MAPS_API_KEY) {
+      console.error('Google Maps API key missing');
+      return NextResponse.json(
+        { error: 'Configuration error', suggestions: [] },
+        { status: 500 }
+      );
+    }
+
+    const googleUrl = new URL('https://maps.googleapis.com/maps/api/place/autocomplete/json');
+    googleUrl.searchParams.append('input', query);
+    googleUrl.searchParams.append('types', 'geocode');
+    googleUrl.searchParams.append('components', 'country:in');
+    googleUrl.searchParams.append('key', process.env.GOOGLE_MAPS_API_KEY);
+
+    const response = await fetch(googleUrl.toString(), {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       }
     });
-    console.log('Database results:', existingSearches); // Debug log
 
-    if (existingSearches.length > 0) {
-      return NextResponse.json({
-        suggestions: existingSearches.map(search => ({
-          label: search.search_query,
-          value: search.search_query
-        }))
-      });
+    if (!response.ok) {
+      throw new Error(`Google API responded with status ${response.status}`);
     }
 
-    // Log Google API attempt
-    console.log('Calling Google Places API');
-    const googleUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=geocode&components=country:in&key=${process.env.GOOGLE_MAPS_API_KEY}`;
-    console.log('Google API URL:', googleUrl); // Debug log
-
-    const response = await fetch(googleUrl);
     const data = await response.json();
-    console.log('Google API response:', data); // Debug log
 
-    if (data.status === 'OK' && data.predictions) {
-      await prisma.searchHistory.create({
-        data: {
-          search_query: query,
-          search_category: 'LOCATION_SEARCH',
-          user_type: 'guest',
-          is_successful: true
-        }
-      });
+    const result = NextResponse.json({
+      suggestions: data.predictions?.map((place: any) => ({
+        label: place.description,
+        value: place.description,
+        placeId: place.place_id
+      })) || []
+    });
 
-      return NextResponse.json({
-        suggestions: data.predictions.slice(0, 5).map((place: any) => ({
-          label: place.description,
-          value: place.description
-        }))
-      });
-    }
+    // Add CORS headers to the response
+    result.headers.set('Access-Control-Allow-Origin', '*');
+    result.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    result.headers.set('Access-Control-Allow-Headers', 'Content-Type');
 
-    return NextResponse.json({ suggestions: [] });
+    return result;
 
   } catch (error) {
-    console.error('Detailed error:', error); // Enhanced error logging
-    return NextResponse.json(
-      { error: 'Search failed', suggestions: [] },
-      { status: 200 }
+    console.error('Search error:', error);
+    const errorResponse = NextResponse.json(
+      { error: 'Failed to fetch locations', suggestions: [] },
+      { status: 500 }
     );
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+    return errorResponse;
   }
+}
+
+export async function OPTIONS() {
+  const response = new NextResponse(null, {
+    status: 200,
+  });
+  
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  
+  return response;
 }
