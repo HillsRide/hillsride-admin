@@ -3,10 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "next dev",
+    "build:staging": "NODE_ENV=staging next build",
+    "build:prod": "NODE_ENV=production next build",
+    "start:staging": "NODE_ENV=staging next start",
+    "start:prod": "NODE_ENV=production next start",
+    "db:push:staging": "NODE_ENV=staging prisma db push",
+    "db:push:prod": "NODE_ENV=production prisma db push",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:generate:staging": "NODE_ENV=staging prisma generate",
+    "prisma:generate:prod": "NODE_ENV=production prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
