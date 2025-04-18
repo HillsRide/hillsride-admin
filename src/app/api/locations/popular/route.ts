@@ -17,7 +17,10 @@ export async function GET() {
     });
 
     return NextResponse.json(
-      popularLocations.map(loc => ({
+      popularLocations.map((loc: {
+        search_query: string;
+        _count: { search_query: number };
+      }) => ({
         search_query: loc.search_query,
         search_count: loc._count.search_query
       }))
