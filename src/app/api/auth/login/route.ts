@@ -4,7 +4,11 @@ import { generateToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password } = await request.json() as {
+      email: string;
+      password: string;
+    };
+
 
     // Find user by email
     const user = await prisma.user.findUnique({
