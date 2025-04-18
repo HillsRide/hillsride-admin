@@ -63,15 +63,8 @@ export default function SearchHistoryTable() {
 
   const pageSizeOptions = [20, 50, 100, 150];
 
-  useEffect(() => {
-    if (pagination) {
-      fetchSearches();
-    }
-  }, [sortBy, sortDesc, pagination?.pageSize, pagination?.currentPage]);
-
   const fetchSearches = async () => {
     if (!pagination) return;
-    
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -90,6 +83,13 @@ export default function SearchHistoryTable() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (pagination) {
+      fetchSearches();
+    }
+  }, [sortBy, sortDesc, pagination?.pageSize, pagination?.currentPage, fetchSearches, pagination]);
+
 
   const handlePageSizeChange = (newSize: string) => {
     setPagination(prev => ({

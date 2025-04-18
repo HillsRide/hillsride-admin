@@ -54,7 +54,7 @@ class PrismaService {
     process.on('SIGUSR2', cleanup); // For nodemon restarts
 
     // Monitor connection status
-    this.instance.$on('query', (e: any) => {
+    this.instance.$on('query', (e: { query: string; params: string; duration: number }) => {
       if (env.NODE_ENV === 'development') {
         console.log('Query:', e.query, e.params);
         // Log slow queries (over 1s)
@@ -72,10 +72,10 @@ class PrismaService {
   ): Promise<T> {
     for (let i = 0; i < attempts; i++) {
       try {
-        return await this.instance.$transaction(fn as any);
-      } catch (error: any) {
+        return await this.instance.$transaction(fn);
+      } catch (error: unknown) {
         if (i === attempts - 1) throw error;
-        if (error.code === 'P2024') { // Connection error
+        if (typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'P2024') { // Connection error
           await new Promise(resolve => setTimeout(resolve, 1000 * i));
           continue;
         }

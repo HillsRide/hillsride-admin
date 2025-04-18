@@ -86,7 +86,7 @@ export async function POST(request: Request) {
     });
 
     // Remove sensitive data before sending response
-    const { password: _password, pin: _pin, authCode: _authCode, ...safeUser } = user;
+    const { password, pin, authCode, ...safeUser } = user;
 
     return NextResponse.json({
       success: true,
@@ -95,10 +95,6 @@ export async function POST(request: Request) {
     });
 
   } catch (error: unknown) {
-    let errMsg = 'Failed to create employee';
-    if (typeof error === 'object' && error !== null && 'message' in error) {
-      errMsg = (error as { message?: string }).message || errMsg;
-    }
     console.error('Detailed error:', error);
     
     if (error.code === 'P2002') {

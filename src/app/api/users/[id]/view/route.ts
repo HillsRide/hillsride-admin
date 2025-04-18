@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(
-  _request: Request,
-  { params: _params }: { params: { id: string } }
-) {
+export async function GET() {
   // For now, just return a success response
   return NextResponse.json({
     success: true,

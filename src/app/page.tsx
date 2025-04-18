@@ -37,8 +37,12 @@ export default function Home() {
       // Redirect to dashboard
       router.push('/dashboard');
       
-    } catch (err: any) {
-      setError(err.message || 'Failed to login');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'message' in err) {
+        setError((err as { message?: string }).message || 'Failed to login');
+      } else {
+        setError('Failed to login');
+      }
     }
   };
 
