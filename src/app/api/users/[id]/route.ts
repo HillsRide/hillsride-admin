@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, context: { params: { id: string } }) {
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: parseInt(params.id)
+        id: parseInt(context.params.id)
       }
     });
 
@@ -29,9 +29,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, context: { params: { id: string } }) {
   try {
-    const userId = parseInt(params.id);
+    const userId = parseInt(context.params.id);
 
     // First check if user exists
     const user = await prisma.user.findUnique({
