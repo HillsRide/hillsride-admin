@@ -9,10 +9,8 @@ export async function GET() {
   });
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request, context) {
+  const { params } = context;
   try {
     const userId = parseInt(params.id);
     const { status } = await request.json();
