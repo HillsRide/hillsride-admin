@@ -1,66 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: parseInt(params.id)
-      }
-    });
+export async function GET(request: NextRequest, context: { params: { id: string } }) {
+  const id = parseInt(context.params.id);
+  const user = await prisma.user.findUnique({ where: { id } });
 
-    if (!user) {
-      return NextResponse.json(
-        { message: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ user });
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-    return NextResponse.json(
-      { message: 'Failed to fetch user' },
-      { status: 500 }
-    );
+  if (!user) {
+    return NextResponse.json({ message: 'User not found' }, { status: 404 });
   }
+
+  return NextResponse.json({ user });
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
-  try {
-    const userId = parseInt(params.id);
+export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+  const id = parseInt(context.params.id);
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    });
-
-    if (!user) {
-      return NextResponse.json({
-        success: false,
-        message: 'Employee not found'
-      }, { status: 404 });
-    }
-
-    await prisma.user.delete({
-      where: { id: userId }
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: 'Employee deleted successfully'
-    });
-
-  } catch (error) {
-    console.error('Failed to delete employee:', error);
-    return NextResponse.json({
-      success: false,
-      message: 'Failed to delete employee'
-    }, { status: 500 });
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) {
+    return NextResponse.json({ success: false, message: 'Employee not found' }, { status: 404 });
   }
+
+  await prisma.user.delete({ where: { id } });
+
+  return NextResponse.json({ success: true, message: 'Employee deleted successfully' });
 }
