@@ -1,20 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-type RouteContext = {
-  params: {
-    id: string;
-  };
-};
-
 export async function GET(
   request: NextRequest,
-  context: RouteContext
+  { params }: { params: { id: string } }
 ) {
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: parseInt(context.params.id)
+        id: parseInt(params.id)
       }
     });
 
@@ -25,9 +19,6 @@ export async function GET(
       );
     }
 
-    // Remove sensitive information if needed
-    // Remove sensitive information if needed
-    // (password is not used, so destructuring is unnecessary)
     return NextResponse.json({ user });
   } catch (error) {
     console.error('Failed to fetch user:', error);
@@ -40,10 +31,10 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  context: RouteContext
+  { params }: { params: { id: string } }
 ) {
   try {
-    const userId = parseInt(context.params.id);
+    const userId = parseInt(params.id);
 
     // First check if user exists
     const user = await prisma.user.findUnique({
