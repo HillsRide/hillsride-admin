@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function GET(request, context) {
   const { params } = context;
   try {
     const user = await prisma.user.findUnique({
@@ -33,10 +30,7 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function DELETE(request, context) {
   const { params } = context;
   try {
     const userId = parseInt(params.id);
