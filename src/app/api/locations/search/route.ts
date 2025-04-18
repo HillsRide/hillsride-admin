@@ -17,7 +17,18 @@ async function getPlaceDetails(placeId: string, apiKey: string) {
     detailsUrl.searchParams.append('key', apiKey);
 
     const response = await fetch(detailsUrl.toString());
-    const data = await response.json();
+    const data = await response.json() as {
+      predictions?: GooglePrediction[];
+      result?: {
+        geometry?: {
+          location?: {
+            lat: number;
+            lng: number;
+          }
+        }
+      }
+    };
+
 
     if (data.result?.geometry?.location) {
       return {
@@ -66,7 +77,18 @@ export async function GET(request: Request) {
       throw new Error(`Google API responded with status ${response.status}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as {
+      predictions?: GooglePrediction[];
+      result?: {
+        geometry?: {
+          location?: {
+            lat: number;
+            lng: number;
+          }
+        }
+      }
+    };
+
     const suggestions = data.predictions?.map((place: GooglePrediction) => ({
       label: place.description,
       value: place.description,
