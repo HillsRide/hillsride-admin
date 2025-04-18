@@ -4,7 +4,12 @@ import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
-    const { currentPassword, newPassword, newPin } = await request.json();
+    const { currentPassword, newPassword, newPin } = await request.json() as {
+      currentPassword: string;
+      newPassword: string;
+      newPin: string;
+    };
+
 
     // Validate required fields
     if (!currentPassword || !newPassword || !newPin) {
