@@ -1,22 +1,71 @@
 import { NextResponse } from 'next/server';
-import { NextRequest } from 'next/server';
-
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+import prisma from '@/lib/prisma';
 
 export async function GET(
-  request: NextRequest,
-  context: RouteContext
-): Promise<NextResponse> {
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const params = await context.params;
-    const id = params.id;
-    return NextResponse.json({ id });
+    const user = await prisma.user.findUnique({
+      where: {
+        id: parseInt(params.id)
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Remove sensitive information if needed
+    const { password, ...safeUser } = user;
+
+    return NextResponse.json({ user: safeUser });
   } catch (error) {
+    console.error('Failed to fetch user:', error);
     return NextResponse.json(
-      { message: 'Error fetching user' },
+      { message: 'Failed to fetch user' },
       { status: 500 }
     );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const userId = parseInt(params.id);
+
+    // First check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      return NextResponse.json({
+        success: false,
+        message: 'Employee not found'
+      }, { status: 404 });
+    }
+
+    // Perform the deletion
+    await prisma.user.delete({
+      where: { id: userId }
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Employee deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Failed to delete employee:', error);
+    return NextResponse.json({
+      success: false,
+      message: 'Failed to delete employee'
+    }, { status: 500 });
   }
 }

@@ -48,11 +48,6 @@ interface PaginationInfo {
 }
 
 export default function SearchHistoryTable() {
-  const [searches, setSearches] = useState<SearchRecord[]>([]);
-  const [filter, setFilter] = useState('');
-  const [sortBy, setSortBy] = useState<keyof SearchRecord>('last_searched');
-  const [sortDesc, setSortDesc] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
   const [pagination, setPagination] = useState<PaginationInfo>({
     currentPage: 1,
     pageSize: 20,
@@ -60,23 +55,37 @@ export default function SearchHistoryTable() {
     totalPages: 0
   });
 
+  const [searches, setSearches] = useState<SearchRecord[]>([]);
+  const [filter, setFilter] = useState('');
+  const [sortBy, setSortBy] = useState<keyof SearchRecord>('last_searched');
+  const [sortDesc, setSortDesc] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
   const pageSizeOptions = [20, 50, 100, 150];
 
   useEffect(() => {
-    fetchSearches();
-  }, [sortBy, sortDesc, pagination.pageSize, pagination.currentPage]);
+    if (pagination) {
+      fetchSearches();
+    }
+  }, [sortBy, sortDesc, pagination?.pageSize, pagination?.currentPage]);
 
   const fetchSearches = async () => {
+    if (!pagination) return;
+    
     setIsLoading(true);
     try {
       const response = await fetch(
         `/api/locations/history?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sort=${sortBy}&desc=${sortDesc}`
       );
       const data = await response.json();
-      setSearches(data.data);
-      setPagination(data.pagination);
+      setSearches(data.data || []);
+      setPagination(prev => ({
+        ...prev,
+        ...data.pagination
+      }));
     } catch (error) {
       console.error('Failed to fetch searches:', error);
+      setSearches([]);
     } finally {
       setIsLoading(false);
     }

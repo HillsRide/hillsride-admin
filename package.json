@@ -13,7 +13,21 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:generate:staging": "NODE_ENV=staging prisma generate",
-    "prisma:generate:prod": "NODE_ENV=production prisma generate"
+    "prisma:generate:prod": "NODE_ENV=production prisma generate",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
+    "db:validate": "prisma validate",
+    "db:format": "prisma format",
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "predev": "npm run prisma:generate",
+    "prebuild:staging": "npm run prisma:generate:staging",
+    "prebuild:prod": "npm run prisma:generate:prod",
+    "db:migrate:staging": "cross-env NODE_ENV=staging prisma migrate deploy",
+    "db:migrate:prod": "cross-env NODE_ENV=production prisma migrate deploy",
+    "db:seed:staging": "cross-env NODE_ENV=staging ts-node prisma/seed.ts",
+    "db:seed:prod": "cross-env NODE_ENV=production ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",
@@ -46,13 +60,19 @@
     "@tailwindcss/postcss": "^4",
     "@types/date-fns": "^2.5.3",
     "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^20",
+    "@types/node": "^20.17.30",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.0",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

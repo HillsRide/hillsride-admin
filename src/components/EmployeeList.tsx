@@ -13,6 +13,7 @@ interface Employee {
   manager: string;
   approver: string;
   authCode?: string;
+  pin?: string;
   status: string;
   createdAt: string;
 }
@@ -29,7 +30,7 @@ const EmployeeList = forwardRef<EmployeeListHandles, {}>((_props, ref) => {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/users');
+      const response = await fetch('http://localhost:3001/api/users');
       const data = await response.json();
       if (data.users) {
         setEmployees(data.users);
@@ -72,18 +73,24 @@ const EmployeeList = forwardRef<EmployeeListHandles, {}>((_props, ref) => {
     if (!confirm('Are you sure you want to delete this employee?')) return;
     
     try {
-      const response = await fetch(`/api/users/${employeeId}`, {
-        method: 'DELETE'
+      const response = await fetch(`http://localhost:3001/api/users/${employeeId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       
+      const data = await response.json();
+      
       if (response.ok) {
+        alert('Employee deleted successfully');
         await fetchEmployees();
       } else {
-        throw new Error('Failed to delete employee');
+        throw new Error(data.message || 'Failed to delete employee');
       }
     } catch (error) {
       console.error('Error deleting employee:', error);
-      alert('Failed to delete employee');
+      alert(error instanceof Error ? error.message : 'Failed to delete employee');
     }
   };
 
@@ -110,10 +117,10 @@ const EmployeeList = forwardRef<EmployeeListHandles, {}>((_props, ref) => {
             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">ID</th>
             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Name</th>
             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Email</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Phone</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Created On</th>
             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Emp ID</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Created</th>
-            <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Auth Code</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">PIN</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-300">Auth Code</th>
             <th className="px-4 py-3 text-center text-sm font-semibold text-gray-300">Status</th>
             <th className="px-4 py-3 text-right text-sm font-semibold text-gray-300">Actions</th>
           </tr>
@@ -125,18 +132,16 @@ const EmployeeList = forwardRef<EmployeeListHandles, {}>((_props, ref) => {
                 <td className="px-4 py-3 text-sm text-gray-300">#{employee.id}</td>
                 <td className="px-4 py-3 text-sm text-white">{employee.fullName}</td>
                 <td className="px-4 py-3 text-sm text-gray-300">{employee.email}</td>
-                <td className="px-4 py-3 text-sm text-gray-300">{employee.phone}</td>
-                <td className="px-4 py-3 text-sm text-gray-300">{employee.employeeId}</td>
                 <td className="px-4 py-3 text-sm text-gray-300">
-                  {new Date(employee.createdAt).toLocaleDateString()}
+                  {new Date(employee.createdAt).toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                  })}
                 </td>
-                <td className="px-4 py-3 text-sm text-center">
-                  {employee.authCode ? (
-                    <span className="text-blue-400">{employee.authCode}</span>
-                  ) : (
-                    <span className="text-gray-500">Not Set</span>
-                  )}
-                </td>
+                <td className="px-4 py-3 text-sm text-gray-300">{employee.employeeId}</td>
+                <td className="px-4 py-3 text-sm text-gray-300">{employee.pin || '-'}</td>
+                <td className="px-4 py-3 text-sm text-gray-300">{employee.authCode || '-'}</td>
                 <td className="px-4 py-3 text-sm text-center">
                   <span className={`${getStatusColor(employee.status)} font-medium`}>
                     {employee.status}
@@ -175,7 +180,7 @@ const EmployeeList = forwardRef<EmployeeListHandles, {}>((_props, ref) => {
             ))
           ) : (
             <tr>
-              <td colSpan={9} className="text-center text-gray-400 py-8">
+              <td colSpan={8} className="text-center text-gray-400 py-8">
                 {loading ? 'Loading employees...' : 'No employees found'}
               </td>
             </tr>
