@@ -36,7 +36,16 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
-      data: searches.map(search => ({
+      data: searches.map((search: {
+        id: number;
+        search_query: string;
+        search_count: number;
+        first_searched: Date;
+        last_searched: Date;
+        user_type: string;
+        device: string;
+        is_successful: boolean;
+      }) => ({
         ...search,
         search_id: search.id
       })),
