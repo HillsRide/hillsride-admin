@@ -35,8 +35,11 @@ export async function GET(request: Request) {
       successRate: Math.round(successRate * 100) / 100,
       totalSearches,
       failedSearches: totalSearches - successfulSearches,
-      averageCompletionRate: searchStats.reduce((acc, curr) => 
-        acc + (curr._sum.search_completion_rate || 0), 0) / totalSearches
+      averageCompletionRate: searchStats.reduce(
+        (acc: number, curr: { is_successful: boolean; _count: number; _sum: { search_completion_rate: number | null } }) =>
+          acc + (curr._sum.search_completion_rate || 0),
+        0
+      ) / totalSearches
     });
   } catch (error) {
     console.error('Error fetching search accuracy:', error);
