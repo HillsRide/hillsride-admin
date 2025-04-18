@@ -22,7 +22,10 @@ export async function GET(request: Request) {
       }
     });
 
-    const totalSearches = searchStats.reduce((acc: number, curr: any) => acc + curr._count, 0);
+    const totalSearches = searchStats.reduce(
+      (acc: number, curr: { is_successful: boolean; _count: number; _sum: { search_completion_rate: number | null } }) => acc + curr._count,
+      0
+    );
     const successfulSearches = searchStats.find(stat => stat.is_successful)?._count || 0;
     const successRate = totalSearches ? (successfulSearches / totalSearches) * 100 : 0;
 
