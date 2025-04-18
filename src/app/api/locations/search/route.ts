@@ -67,7 +67,7 @@ export async function GET(request: Request) {
     }
 
     const data = await response.json();
-
+    const suggestions = data.predictions?.map((place: GooglePrediction) => ({
       label: place.description,
       value: place.description,
       placeId: place.place_id
