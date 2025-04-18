@@ -6,14 +6,16 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const range = searchParams.get('range') || 'week';
 
-    let dateFilter: any = {
+    const dateFilter: { gte: Date } = {
       gte: new Date(new Date().setDate(new Date().getDate() - 7))
     };
 
     if (range === 'month') {
-      dateFilter.gte = new Date(new Date().setMonth(new Date().getMonth() - 1));
+      const monthDate = new Date(new Date().setMonth(new Date().getMonth() - 1));
+      dateFilter.gte = monthDate;
     } else if (range === 'year') {
-      dateFilter.gte = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+      const yearDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+      dateFilter.gte = yearDate;
     }
 
     const trends = await prisma.searchHistory.groupBy({
@@ -36,6 +38,7 @@ export async function GET(request: Request) {
       }))
     );
   } catch (error) {
+    console.error(error);
     return NextResponse.json([], { status: 500 });
   }
 }

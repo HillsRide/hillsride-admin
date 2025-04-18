@@ -23,6 +23,7 @@ export async function GET() {
       }))
     );
   } catch (error) {
-    return NextResponse.json([], { status: 500 });
-  }
+  console.error(error);
+  return NextResponse.json([], { status: 500 });
+}
 }

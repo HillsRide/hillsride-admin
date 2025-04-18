@@ -42,8 +42,12 @@ export default function PasswordChangeModal({ isOpen, onClose }: PasswordChangeM
 
       onClose();
       // Optional: Add success notification
-    } catch (err: any) {
-      setError(err.message || 'Failed to change password');
+    } catch (err: unknown) {
+      if (typeof err === 'object' && err !== null && 'message' in err) {
+        setError((err as { message?: string }).message || 'Failed to change password');
+      } else {
+        setError('Failed to change password');
+      }
     }
   };
 

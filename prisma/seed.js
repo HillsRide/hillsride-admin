@@ -103,14 +103,27 @@ async function main() {
     console.log('Seeding users...')
     for (const user of existingUsers) {
       await targetClient.user.upsert({
-        where: { email: user.email },
+        where: {
+          email: "biswajitnarzary@hillsride.in"
+        },
         update: {},
         create: {
-          ...user,
-          id: undefined,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          password: user.password ? await bcrypt.hash(user.password, 10) : undefined
+          fullName: "Biswajit Narzary",
+          email: "biswajitnarzary@hillsride.in",
+          phone: "6003195362",
+          employeeId: "EMP01HR",
+          designation: "coo",
+          department: "administration",
+          manager: "Ganjan Basumatary",
+          approver: "Ganjan Basumatary",
+          password: "$2b$10$JzMCaAJCLGCaaDE31HV/peq1Ib7XKmexpCWGkxjyRxEaRF0KTtIpO",
+          pin: "9242",
+          authCode: "62MVNUNSOH",
+          status: "ACTIVE",
+          needsPasswordChange: true,
+          role: "user",
+          createdAt: new Date("2025-04-18T05:49:58.955Z"),
+          updatedAt: new Date("2025-04-18T05:49:58.955Z")
         }
       })
     }
