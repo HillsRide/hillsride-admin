@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -63,7 +63,7 @@ export default function SearchHistoryTable() {
 
   const pageSizeOptions = [20, 50, 100, 150];
 
-  const fetchSearches = async () => {
+  const fetchSearches = useCallback(async () => {
     if (!pagination) return;
     setIsLoading(true);
     try {
@@ -82,7 +82,7 @@ export default function SearchHistoryTable() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [pagination, sortBy, sortDesc]);
 
   useEffect(() => {
     if (pagination) {

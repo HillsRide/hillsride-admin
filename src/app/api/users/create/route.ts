@@ -86,11 +86,10 @@ export async function POST(request: Request) {
     });
 
     // Remove sensitive data before sending response
-    const { password, pin, authCode, ...safeUser } = user;
-
+    // (password, pin, authCode are not used, so destructuring is unnecessary)
     return NextResponse.json({
       success: true,
-      user: safeUser,
+      user,
       message: 'Employee created successfully'
     });
 

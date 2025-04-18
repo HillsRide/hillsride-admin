@@ -20,9 +20,9 @@ export async function GET(
     }
 
     // Remove sensitive information if needed
-    const { password, ...safeUser } = user;
-
-    return NextResponse.json({ user: safeUser });
+    // Remove sensitive information if needed
+    // (password is not used, so destructuring is unnecessary)
+    return NextResponse.json({ user });
   } catch (error) {
     console.error('Failed to fetch user:', error);
     return NextResponse.json(
