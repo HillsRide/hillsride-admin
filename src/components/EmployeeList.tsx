@@ -22,7 +22,7 @@ interface EmployeeListHandles {
   refreshList: () => Promise<void>;
 }
 
-const EmployeeList = forwardRef<EmployeeListHandles, {}>((_props, ref) => {
+const EmployeeList = forwardRef<EmployeeListHandles, object>((_props, ref) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();

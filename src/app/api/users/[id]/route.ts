@@ -20,7 +20,7 @@ export async function GET(
     }
 
     // Remove sensitive information if needed
-    const { password, ...safeUser } = user;
+    const { password: _password, ...safeUser } = user;
 
     return NextResponse.json({ user: safeUser });
   } catch (error) {
