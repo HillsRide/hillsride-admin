@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       }
     });
 
-    const totalSearches = searchStats.reduce((acc: number, curr) => acc + curr._count, 0);
+    const totalSearches = searchStats.reduce((acc: number, curr: any) => acc + curr._count, 0);
     const successfulSearches = searchStats.find(stat => stat.is_successful)?._count || 0;
     const successRate = totalSearches ? (successfulSearches / totalSearches) * 100 : 0;
 
