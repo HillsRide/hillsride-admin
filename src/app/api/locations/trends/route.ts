@@ -32,7 +32,10 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json(
-      trends.map(trend => ({
+      trends.map((trend: {
+        last_searched: Date;
+        _count: { search_id: number };
+      }) => ({
         date: trend.last_searched,
         searches: trend._count.search_id
       }))
